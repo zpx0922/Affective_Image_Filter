@@ -1,0 +1,29 @@
+Brotli @ file:///home/conda/feedstock_root/build_artifacts/brotli-split_1695989787169/work
+certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1700303426725/work/certifi
+charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1698833585322/work
+filelock==3.13.1
+fsspec==2023.12.2
+huggingface-hub==0.19.4
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1701026962277/work
+numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1687808301083/work
+packaging==23.2
+pandas==2.0.3
+Pillow @ file:///home/conda/feedstock_root/build_artifacts/pillow_1675487152289/work
+PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
+python-dateutil==2.8.2
+pytz==2023.3.post1
+PyYAML==6.0.1
+regex==2023.10.3
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1684774241324/work
+safetensors==0.4.1
+scipy==1.10.1
+six==1.16.0
+tokenizers==0.15.0
+torch==1.13.0
+torchaudio==0.13.0
+torchvision==0.14.0
+tqdm==4.66.1
+transformers==4.36.1
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1702176139754/work
+tzdata==2023.3
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1699933488691/work
