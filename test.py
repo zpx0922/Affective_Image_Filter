@@ -60,59 +60,55 @@ def build_VAD_word(csv_dir):
         VAD_dict.update({key:value})
     return VAD_dict
 
-def make_PE(style_utterance,batch_size):
-    anchor_PE = torch.empty((0,40,192))
-    for v in range(batch_size):
-        text = style_utterance[v]
-        words = text.split(' ')
-        sentence_PE = torch.empty((0,64*3))
-        if len(words) < 40:
-            for word_num in range(len(words)):
-                word_PE = torch.tensor([])
-                if VAD_word_dict.__contains__(words[word_num].lower()) == True:
-                    word_VAD = VAD_word_dict[words[word_num].lower()]
-                    for vad_num in range(3):
-                        position = int(word_VAD[vad_num])
-                        word_PE_one = PE_sheet[0][position]
-                        word_PE = torch.cat([word_PE,word_PE_one],dim=0)
-                    word_PE = word_PE.unsqueeze(0)
-                    sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
-                else:
-                    for vad_num in range(3):
-                        position = 500
-                        word_PE_one = PE_sheet[0][position]
-                        word_PE = torch.cat([word_PE,word_PE_one],dim=0)
-                    word_PE = word_PE.unsqueeze(0)
-                    sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
-
-            for word_rest in range(40-len(words)):
-                word_PE = torch.tensor([])
+def make_PE(style_utterance):  
+    words = style_utterance.split(' ')
+    sentence_PE = torch.empty((0,64*3))
+    if len(words) < 40:
+        for word_num in range(len(words)):
+            word_PE = torch.tensor([])
+            if VAD_word_dict.__contains__(words[word_num].lower()) == True:
+                word_VAD = VAD_word_dict[words[word_num].lower()]
+                for vad_num in range(3):
+                    position = int(word_VAD[vad_num])
+                    word_PE_one = PE_sheet[0][position]
+                    word_PE = torch.cat([word_PE,word_PE_one],dim=0)
+                word_PE = word_PE.unsqueeze(0)
+                sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
+            else:
                 for vad_num in range(3):
                     position = 500
                     word_PE_one = PE_sheet[0][position]
                     word_PE = torch.cat([word_PE,word_PE_one],dim=0)
                 word_PE = word_PE.unsqueeze(0)
                 sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
-        else:
-             for word_num in range(40):
-                word_PE = torch.tensor([])
-                if VAD_word_dict.__contains__(words[word_num].lower()) == True:
-                    word_VAD = VAD_word_dict[words[word_num].lower()]
-                    for vad_num in range(3):
-                        position = int(word_VAD[vad_num])
-                        word_PE_one = PE_sheet[0][position]
-                        word_PE = torch.cat([word_PE,word_PE_one],dim=0)
-                    word_PE = word_PE.unsqueeze(0)
-                    sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
-                else:
-                    for vad_num in range(3):
-                        position = 500
-                        word_PE_one = PE_sheet[0][position]
-                        word_PE = torch.cat([word_PE,word_PE_one],dim=0)
-                    word_PE = word_PE.unsqueeze(0)
-                    sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
-        sentence_PE = sentence_PE.unsqueeze(0)
-        anchor_PE = torch.cat([anchor_PE,sentence_PE],dim=0)
+
+        for word_rest in range(40-len(words)):
+            word_PE = torch.tensor([])
+            for vad_num in range(3):
+                position = 500
+                word_PE_one = PE_sheet[0][position]
+                word_PE = torch.cat([word_PE,word_PE_one],dim=0)
+            word_PE = word_PE.unsqueeze(0)
+            sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
+    else:
+        for word_num in range(40):
+            word_PE = torch.tensor([])
+            if VAD_word_dict.__contains__(words[word_num].lower()) == True:
+                word_VAD = VAD_word_dict[words[word_num].lower()]
+                for vad_num in range(3):
+                    position = int(word_VAD[vad_num])
+                    word_PE_one = PE_sheet[0][position]
+                    word_PE = torch.cat([word_PE,word_PE_one],dim=0)
+                word_PE = word_PE.unsqueeze(0)
+                sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
+            else:
+                for vad_num in range(3):
+                    position = 500
+                    word_PE_one = PE_sheet[0][position]
+                    word_PE = torch.cat([word_PE,word_PE_one],dim=0)
+                word_PE = word_PE.unsqueeze(0)
+                sentence_PE = torch.cat([sentence_PE,word_PE],dim=0)
+    anchor_PE = sentence_PE.unsqueeze(0)
     return anchor_PE
 
 parser = argparse.ArgumentParser()
@@ -123,12 +119,19 @@ parser.add_argument('--description_dir', type=str, default='utterance.txt',
                     help='./test_pic/style/1.txt')
 parser.add_argument('--output', type=str, default='output',
                     help='./output')
-parser.add_argument('--vgg', type=str, default='')
-parser.add_argument('--decoder', type=str, default='')
-parser.add_argument('--Trans', type=str, default='')
-parser.add_argument('--embedding', type=str, default='')
-parser.add_argument('--VAD_emb', type=str, default='')
-parser.add_argument('--VAD_dic', default='', type=str,
+# parser.add_argument('--vgg', type=str, default='')
+# parser.add_argument('--decoder', type=str, default='')
+# parser.add_argument('--Trans', type=str, default='')
+# parser.add_argument('--embedding', type=str, default='')
+# parser.add_argument('--VAD_emb', type=str, default='')
+# parser.add_argument('--VAD_dic', default='', type=str,
+#                     help='Directory path to name and gener of style images ')
+parser.add_argument('--vgg', type=str, default='./experiments/vgg_normalised.pth')
+parser.add_argument('--decoder', type=str, default='experiments/decoder_iter_40000.pth')
+parser.add_argument('--Trans', type=str, default='experiments/transformer_iter_40000.pth')
+parser.add_argument('--embedding', type=str, default='experiments/embedding_iter_40000.pth')
+parser.add_argument('--VAD_emb', type=str, default='experiments/conv_40000.pth')
+parser.add_argument('--VAD_dic', default='experiments/affective_ArtEmis.csv', type=str,
                     help='Directory path to name and gener of style images ')
 parser.add_argument('--style_interpolation_weights', type=str, default="")
 parser.add_argument('--position_embedding', default='sine', type=str, choices=('sine', 'learned'),
@@ -163,8 +166,10 @@ vgg.load_state_dict(torch.load(args.vgg))
 vgg = nn.Sequential(*list(vgg.children())[:44])
 
 logging.set_verbosity_error()
-BERT_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-BERT_model = BertModel.from_pretrained('bert-base-uncased')
+# BERT_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+# BERT_model = BertModel.from_pretrained('bert-base-uncased')
+BERT_tokenizer = BertTokenizer.from_pretrained('/home/shuchenweng/zpx/ICCV2023/bert-base-uncased')   # 'bert-base-uncased'
+BERT_model = BertModel.from_pretrained('/home/shuchenweng/zpx/ICCV2023/bert-base-uncased')   # 'bert-base-uncased'
 BERT_model.to(device)
 
 decoder = AIF_model.decoder
@@ -226,7 +231,7 @@ for content_path in content_paths:
     for utterance in utterances:
         content = content_tf(Image.open(content_path).convert("RGB"))
         h,w,c=np.shape(content)    
-        img_PE = make_PE(utterance,1)
+        img_PE = make_PE(utterance)
         img_PE = img_PE.cuda()
         text = utterance
         encoded_input = BERT_tokenizer(text, add_special_tokens = True, max_length = 40,pad_to_max_length = True,return_tensors='pt').to(device)
